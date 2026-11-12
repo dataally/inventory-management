@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: direct-sidebar-request
+expected_outcome: |
+  The top navigation bar is replaced by a left vertical sidebar containing all existing nav links, the app keeps its existing palette, spacing is consistent, and the app still builds.

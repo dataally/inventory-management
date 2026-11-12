@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: casual-crowded-nav
+expected_outcome: |
+  Navigation moves from the top to a left sidebar with all 7 tabs, spacing is consistent, the language switcher and profile menu remain reachable, and the app still builds.
