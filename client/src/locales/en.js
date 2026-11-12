@@ -6,6 +6,7 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -105,6 +106,9 @@ export default {
   orders: {
     title: 'Orders',
     description: 'View and manage customer orders',
+    submittedOrders: 'Submitted Orders',
+    noSubmittedOrders: 'No restock orders have been submitted yet',
+    submittedLoadFailed: 'Failed to load submitted orders',
     allOrders: 'All Orders',
     totalOrders: 'Total Orders',
     totalRevenue: 'Total Revenue',
@@ -125,8 +129,50 @@ export default {
       totalValue: 'Total Value',
       status: 'Status',
       expectedDelivery: 'Expected Delivery',
-      actualDelivery: 'Actual Delivery'
+      actualDelivery: 'Actual Delivery',
+      submittedDate: 'Submitted',
+      totalCost: 'Total Cost',
+      leadTime: 'Lead Time'
     }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Plan a restock order within your budget, prioritized by shortfall against forecasted demand',
+    budget: 'Budget',
+    budgetSlider: 'Restocking budget',
+    plannedSpend: 'Planned Spend',
+    remaining: 'Remaining',
+    itemsCovered: 'Items Covered',
+    recommendations: 'Recommended Items',
+    overBudget: 'Planned spend exceeds the budget',
+    noRecommendations: 'No recommended items fit within this budget. Increase the budget to see recommendations.',
+    orderLeadTime: 'Order lead time',
+    days: '{count} days',
+    placeOrder: 'Place Order',
+    placing: 'Placing order...',
+    selectItem: 'Select {sku}',
+    table: {
+      include: 'Include',
+      quantity: 'Quantity',
+      item: 'Item',
+      trend: 'Trend',
+      onHand: 'On Hand',
+      forecast: 'Forecast',
+      unitCost: 'Unit Cost',
+      lineCost: 'Line Cost',
+      leadTime: 'Lead Time'
+    },
+    success: {
+      title: 'Order placed',
+      orderNumber: 'Order number',
+      leadTime: 'Lead time',
+      expectedDelivery: 'Expected delivery',
+      viewOrders: 'View submitted orders'
+    },
+    loadFailed: 'Failed to load recommendations',
+    orderFailed: 'Failed to place order'
   },
 
   // Finance/Spending

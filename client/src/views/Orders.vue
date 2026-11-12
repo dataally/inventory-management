@@ -74,6 +74,56 @@
           </table>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('orders.submittedOrders') }} ({{ restockOrders.length }})</h3>
+        </div>
+        <div v-if="restockError" class="error">{{ restockError }}</div>
+        <div v-else-if="restockOrders.length === 0" class="loading">{{ t('orders.noSubmittedOrders') }}</div>
+        <div v-else class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th class="col-order-number">{{ t('orders.table.orderNumber') }}</th>
+                <th class="col-date">{{ t('orders.table.submittedDate') }}</th>
+                <th class="col-items">{{ t('orders.table.items') }}</th>
+                <th class="col-value">{{ t('orders.table.totalCost') }}</th>
+                <th class="col-date">{{ t('orders.table.leadTime') }}</th>
+                <th class="col-date">{{ t('orders.table.expectedDelivery') }}</th>
+                <th class="col-status">{{ t('orders.table.status') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in restockOrders" :key="order.id">
+                <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
+                <td class="col-date">{{ formatDate(order.submitted_at) }}</td>
+                <td class="col-items">
+                  <details class="items-details">
+                    <summary class="items-summary">
+                      {{ t('orders.itemsCount', { count: order.lines.length }) }}
+                    </summary>
+                    <div class="items-dropdown">
+                      <div v-for="line in order.lines" :key="line.sku" class="item-entry">
+                        <span class="item-name">{{ translateProductName(line.name) }}</span>
+                        <span class="item-meta">{{ t('orders.quantity') }}: {{ line.quantity }} @ {{ currencySymbol }}{{ line.unit_cost }}</span>
+                      </div>
+                    </div>
+                  </details>
+                </td>
+                <td class="col-value"><strong>{{ currencySymbol }}{{ order.total_cost.toLocaleString() }}</strong></td>
+                <td class="col-date">{{ t('restocking.days', { count: order.lead_time_days }) }}</td>
+                <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
+                <td class="col-status">
+                  <span :class="['badge', getOrderStatusClass(order.status)]">
+                    {{ restockStatusLabel(order.status) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -95,6 +145,8 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const restockOrders = ref([])
+    const restockError = ref(null)
 
     // Use shared filters
     const {
@@ -153,13 +205,38 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    // Submitted restock orders are independent of the global filters, so they are
+    // fetched once on mount and caught separately to avoid breaking the main table.
+    const loadRestockOrders = async () => {
+      try {
+        restockError.value = null
+        restockOrders.value = await api.getRestockOrders()
+      } catch (err) {
+        restockError.value = t('orders.submittedLoadFailed')
+        console.error('Restock orders load error:', err)
+      }
+    }
+
+    // Fall back to the raw status when no translation exists (t returns the key)
+    const restockStatusLabel = (status) => {
+      const key = `status.${String(status).toLowerCase()}`
+      const label = t(key)
+      return label === key ? status : label
+    }
+
+    onMounted(() => {
+      loadOrders()
+      loadRestockOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      restockOrders,
+      restockError,
+      restockStatusLabel,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
@@ -201,6 +278,11 @@ export default {
 
 .col-value {
   width: 120px;
+}
+
+/* Spacing between the main and submitted orders cards */
+.card + .card {
+  margin-top: 1.5rem;
 }
 
 /* Items details styling */
